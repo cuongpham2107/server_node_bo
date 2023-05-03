@@ -1,0 +1,47 @@
+
+
+
+
+<!DOCTYPE HTML>
+<html>
+<head>
+    <base href="http://localhost:3001">
+    <script src="./socket.io/socket.io.js"></script>
+<script type="text/javascript" src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.stock.min.js"></script>
+<script type="text/javascript">
+window.onload = function () {
+  var dataPoints = [];
+  var stockChart = new CanvasJS.StockChart("stockChartContainer",{
+    title:{
+      text:"Exchange Rate for EUR to USD"
+    },
+    charts: [{
+      data: [{
+        type: "splineArea",
+        color: "#3698C5",
+        yValueFormatString: "€1 = $#,###.##",
+        dataPoints : dataPoints
+      }]
+    }],
+    navigator: {
+      slider: {
+        minimum: new Date(2015, 00, 01),
+        maximum: new Date(2016, 00, 01)
+      }
+    }
+  });
+  var socket = io("http://localhost:3001")
+        
+    socket.on("server-send-price-btc", function (data) {
+        dataPoints.push({x: new Date(data.eventTime), y: Number(data.close)});
+        stockChart.render();
+        console.log(data)
+    })
+}
+</script>
+</head>
+<body>
+<div id="stockChartContainer" style="height: 400px; width: 100%;"></div>
+</body>
+</html>
